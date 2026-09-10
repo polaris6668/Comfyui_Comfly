@@ -9,7 +9,7 @@ if %errorlevel%==0 (
     exit /b
 )
 git commit -m "Update %date% %time%"
-git push team main
+git push
 if %errorlevel%==0 (
     echo.
     echo 推送成功！同事双击"拉取更新.bat"即可拿到最新版。
