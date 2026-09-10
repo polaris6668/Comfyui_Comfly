@@ -2,7 +2,7 @@ import os
 import json
 
 
-baseurl = "https://ai.comfly.chat"
+baseurl = "https://ai.comfly.org"
 
 def get_config():
     try:
@@ -40,7 +40,7 @@ class Comfly_api_set:
         global baseurl
         
         base_url_mapping = {
-            "comfly": "https://ai.comfly.chat",
+            "comfly": "https://ai.comfly.org",
             "ip": custom_ip,
             "hk": "https://hk-api.gptbest.vip",
             "us": "https://api.gptbest.vip"

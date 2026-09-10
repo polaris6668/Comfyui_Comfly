@@ -37,6 +37,26 @@ def pil2tensor(image: Union[Image.Image, List[Image.Image]]) -> torch.Tensor:
     return torch.from_numpy(img_array)[None,]
 
 
+def pil2tensor_preserve_alpha(image: Union[Image.Image, List[Image.Image]]) -> torch.Tensor:
+    """Convert a PIL image to a ComfyUI tensor without discarding PNG alpha.
+
+    ComfyUI's IMAGE tensors may contain either RGB or RGBA data.  The normal
+    ``pil2tensor`` helper intentionally normalizes everything to RGB for API
+    inputs, but that is wrong for image-generation responses where the alpha
+    channel is the requested transparent background.
+    """
+    if isinstance(image, list):
+        if len(image) == 0:
+            return torch.empty(0)
+        return torch.cat([pil2tensor_preserve_alpha(img) for img in image], dim=0)
+
+    if image.mode not in ("RGB", "RGBA"):
+        image = image.convert("RGBA" if "A" in image.getbands() else "RGB")
+
+    img_array = np.array(image).astype(np.float32) / 255.0
+    return torch.from_numpy(img_array)[None,]
+
+
 def tensor2pil(image: torch.Tensor) -> List[Image.Image]:
     """
     Convert tensor to PIL image(s), matching ComfyUI's implementation.

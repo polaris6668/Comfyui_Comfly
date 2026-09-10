@@ -383,7 +383,7 @@ enhance_prompt开关：
 
 20250418：
 `jimeng即梦节点`: 新增即梦的ComflyJimengApi节点。
-目前只支持文生图，使用的是 https://ai.comfly.chat 的 api key
+目前只支持文生图，使用的是 https://ai.comfly.org 的 api key
 
 参数说明：
 use_pre_llm：开启文本扩写，会针对输入prompt进行扩写优化，如果输入prompt较短建议开启，如果输入prompt较长建议关闭。
@@ -418,7 +418,7 @@ opacity：水印的不透明度，取值范围0-1，1表示完全不透明，默
 
 20250329：
 `Chatgpt节点`: 新增openai的ComflyChatGPTApi节点，。
-目前单图和多图输入，文本输入，生成图片，图片编辑.使用的是 https://ai.comfly.chat 的 api key
+目前单图和多图输入，文本输入，生成图片，图片编辑.使用的是 https://ai.comfly.org 的 api key
 固定一次生成消耗0.06元（显示是逆向api，稳定性还不高，想尝鲜的可以注册网站用免费送的0.2美金玩玩）
 速度不快，因为官网速度也不快，所以需要点耐心。 files输入接口还没有完善，先忽略。
 用sora_image现在先对稳定点
@@ -440,7 +440,7 @@ opacity：水印的不透明度，取值范围0-1，1表示完全不透明，默
 
 `Gemmi节点`: ComflyGeminiAPI节点resolution新增：object_image size,subject_image size,scene_image size根据输入的图片的尺寸来确定输出图片的尺寸。增加image url输出接口。
 
-`Doubao豆包节点`: ComflySeededit节点文字驱动生成图片，编辑图片。支持添加自己的水印logo。目前只支持单图修改和参考。使用的是 https://ai.comfly.chat 的 api key
+`Doubao豆包节点`: ComflySeededit节点文字驱动生成图片，编辑图片。支持添加自己的水印logo。目前只支持单图修改和参考。使用的是 https://ai.comfly.org 的 api key
 
 用于编辑图像的提示词 。建议：
 
@@ -474,7 +474,7 @@ opacity：水印的不透明度，取值范围0-1，1表示完全不透明，默
 </details>
 
 20250321：`Gemmi节点`: 谷歌ComflyGeminiAPI节点支持生成文生多图（最多4张，控制时间）。
-支持多图片参考，我是借用google labs的whisk思路，我感觉比较实用，并不需要太多参考图，3种足够.无需谷歌账户和梯子魔法就能用。使用的是 https://ai.comfly.chat 的 api key
+支持多图片参考，我是借用google labs的whisk思路，我感觉比较实用，并不需要太多参考图，3种足够.无需谷歌账户和梯子魔法就能用。使用的是 https://ai.comfly.org 的 api key
 <details>
 <summary>查看更新/Update </summary>  
  
@@ -493,7 +493,7 @@ opacity：水印的不透明度，取值范围0-1，1表示完全不透明，默
 </details> 
 
 20250318：`kling节点`: 新增可灵文生视频，图生视频，视频延长（只支持v1.0模型）3个节点.
-可灵视频生成时间大概要5-6分钟左右，使用的是 https://ai.comfly.chat 的 api key.
+可灵视频生成时间大概要5-6分钟左右，使用的是 https://ai.comfly.org 的 api key.
 <details>
 <summary>查看更新/Update </summary>  
  
@@ -567,9 +567,9 @@ opacity：水印的不透明度，取值范围0-1，1表示完全不透明，默
 
 
 > \[!IMPORTANT]\
-> 由于ai和 midjourney api需要api key,请直接在这个网址：https://ai.comfly.chat
+> 由于ai和 midjourney api需要api key,请直接在这个网址：https://ai.comfly.org
 > 
-> api key可以用在任何支持自定义的第三方软件上面，直接在线使用网址：https://ai.comfly.chat/chat
+> api key可以用在任何支持自定义的第三方软件上面，直接在线使用网址：https://ai.comfly.org/chat
 >
 > 本插件还带有coze，kling可灵文生图节点，都是免费的，需要自己填写自己的bot api或者cookie即可。
 > 

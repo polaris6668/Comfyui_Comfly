@@ -24,7 +24,7 @@ import subprocess
 import concurrent.futures
 import threading
 
-from ..utils import pil2tensor, tensor2pil, ComflyVideoAdapter
+from ..utils import pil2tensor, pil2tensor_preserve_alpha, tensor2pil, ComflyVideoAdapter
 from ..comfly_config import get_config, save_config, baseurl
 from comfy.comfy_types import IO
 from comfy.utils import common_upscale
@@ -417,9 +417,9 @@ class Comfly_gpt_image:
             },
             "optional": {
                 "api_key": ("STRING", {"default": ""}),
-                "model": (["gpt-image-1", "gpt-image-1.5"], {"default": "gpt-image-1"}),
+                "model": (["gpt-image-1", "gpt-image-1.5", "gpt-image-2.5-flare", "gpt-image-2.5-flare-2k", "gpt-image-2.5-flare-4k", "gpt-image-2.5-sunburst", "gpt-image-2.5-sunburst-2k", "gpt-image-2.5-sunburst-4k"], {"default": "gpt-image-1"}),
                 "n": ("INT", {"default": 1, "min": 1, "max": 10}),
-                "quality": (["auto", "high", "medium", "low"], {"default": "auto"}),
+                "quality": (["auto", "high", "medium", "low", "xhigh", "max"], {"default": "auto"}),
                 "size": (["auto", "1024x1024", "1536x1024", "1024x1536"], {"default": "auto"}),
                 "background": (["auto", "transparent", "opaque"], {"default": "auto"}),
                 "output_format": (["png", "jpeg", "webp"], {"default": "png"}),
@@ -2179,7 +2179,7 @@ class Comfly_gpt_image_2_official:
 
         data = {
             "prompt": prompt,
-            "model": "gpt-image-2",
+            "model": self.model,
             "n": str(n),
             "quality": quality,
             "moderation": moderation,
@@ -2217,7 +2217,7 @@ class Comfly_gpt_image_2_official:
                 b64_data = b64_data[len("data:image/png;base64,") :]
             image_data = base64.b64decode(b64_data)
             pil_img = Image.open(BytesIO(image_data))
-            return pil2tensor(pil_img)
+            return pil2tensor_preserve_alpha(pil_img)
         if image_url:
             for download_attempt in range(1, max_retries + 1):
                 try:
@@ -2227,7 +2227,7 @@ class Comfly_gpt_image_2_official:
                     )
                     img_response.raise_for_status()
                     pil_img = Image.open(BytesIO(img_response.content))
-                    return pil2tensor(pil_img)
+                    return pil2tensor_preserve_alpha(pil_img)
                 except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                     if download_attempt == max_retries:
                         return None
@@ -2352,7 +2352,7 @@ class Comfly_gpt_image_2_official:
                     b64_data = b64_data[len("data:image/png;base64,"):]
                 image_data = base64.b64decode(b64_data)
                 pil_img = Image.open(BytesIO(image_data))
-                out.append(pil2tensor(pil_img))
+                out.append(pil2tensor_preserve_alpha(pil_img))
             elif "url" in item and item["url"]:
                 for download_attempt in range(1, max_retries + 1):
                     try:
@@ -2362,7 +2362,7 @@ class Comfly_gpt_image_2_official:
                         )
                         img_response.raise_for_status()
                         pil_img = Image.open(BytesIO(img_response.content))
-                        out.append(pil2tensor(pil_img))
+                        out.append(pil2tensor_preserve_alpha(pil_img))
                         break
                     except (requests.exceptions.Timeout, requests.exceptions.ConnectionError):
                         if download_attempt == max_retries:
@@ -2390,13 +2390,14 @@ class Comfly_gpt_image_2_official:
         return response.json()
 
     def generate(
-        self, prompt, aspect_ratio="1:1", resolution="1k", image1=None, image2=None, 
+        self, prompt, model="gpt-image-2", aspect_ratio="1:1", resolution="1k", image1=None, image2=None,
         image3=None, image4=None, image5=None, mask=None, api_key="",
         n=1, quality="auto", background="auto",
         output_format="png", output_compression=100, moderation="auto",
         async_mode=True, webhook="", max_poll_attempts=300, poll_interval=5,
         max_retries=5, initial_timeout=900, seed=0
     ):
+        self.model = model
         if api_key.strip():
             self.api_key = api_key
             config = get_config()
@@ -2423,8 +2424,8 @@ class Comfly_gpt_image_2_official:
         pbar.update_absolute(5)
 
         def _info_common(mode_line):
-            s = f"**Comfly gpt-image-2 (official)** {mode_line}\n"
-            s += f"Model: gpt-image-2\n"
+            s = f"**Comfly {self.model} (official)** {mode_line}\n"
+            s += f"Model: {self.model}\n"
             s += f"Prompt: {prompt}\n"
             s += f"Aspect Ratio: {aspect_ratio}\n"
             s += f"Resolution: {resolution}\n"
@@ -2523,8 +2524,34 @@ class Comfly_gpt_image_2_official:
             return (combined, "", info)
 
         except Exception as e:
-            error_message = f"Comfly_gpt_image_2_official error: {str(e)}"
+            error_message = f"{type(self).__name__} error: {str(e)}"
             import traceback
             print(traceback.format_exc())
             print(error_message)
             return (blank_t, "", error_message)
+
+
+class Comfly_gpt_image_25_official(Comfly_gpt_image_2_official):
+
+    _MODEL_CHOICES = [
+        "gpt-image-2.5-flare",
+        "gpt-image-2.5-flare-2k",
+        "gpt-image-2.5-flare-4k",
+        "gpt-image-2.5-sunburst",
+        "gpt-image-2.5-sunburst-2k",
+        "gpt-image-2.5-sunburst-4k",
+    ]
+
+    @classmethod
+    def INPUT_TYPES(cls):
+        types = super().INPUT_TYPES()
+        required = types["required"]
+        types["required"] = {
+            "prompt": required["prompt"],
+            "model": (cls._MODEL_CHOICES, {"default": "gpt-image-2.5-flare"}),
+            "aspect_ratio": required["aspect_ratio"],
+            "resolution": required["resolution"],
+        }
+        types["optional"]["quality"] = (["auto", "high", "medium", "low", "xhigh", "max"], {"default": "auto"})
+        types["optional"]["background"] = (["auto", "transparent", "opaque"], {"default": "auto"})
+        return types
